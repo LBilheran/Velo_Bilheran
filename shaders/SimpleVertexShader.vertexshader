@@ -1,0 +1,47 @@
+#version 330 core
+
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec3 aNormal;
+
+uniform mat4 MVP;
+uniform mat4 modelMatrix;
+uniform vec3 lightPosition;
+uniform vec3 cameraPosition;
+
+out vec3 fragPos;
+out vec3 normal;
+out vec3 lightDir;
+out vec3 viewDir;
+out vec2 UV;
+
+void main(){
+    /*
+    gl_Position = MVP*vec4(vertexPosition_modelspace,1);
+    UV = vertexUV;
+    
+    vec4 worldPosition = modelMatrix * vec4(vertexPosition_modelspace, 1.0);
+    fragPos = vec3(worldPosition);
+    normal = mat3(transpose(inverse(modelMatrix))) * aNormal;
+    lightDir = lightPosition - fragPos;
+    viewDir = cameraPosition - fragPos;
+    */
+    
+    // Position finale du sommet dans le repère clip
+    gl_Position = MVP*vec4(vertexPosition_modelspace,1);
+
+    // Coordonnées UV
+    UV = vertexUV;
+
+    // Position du fragment dans le repère monde
+    fragPos = vec3(modelMatrix * vec4(vertexPosition_modelspace, 1.0));
+
+    // Normale transformée dans le repère monde (normalisée)
+    normal = normalize(mat3(transpose(inverse(modelMatrix))) * aNormal);
+
+    // Vecteur lumière (non normalisé)
+    lightDir = lightPosition - fragPos;
+
+    // Vecteur vue (non normalisé)
+    viewDir = cameraPosition - fragPos;
+}
